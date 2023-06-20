@@ -1,0 +1,29 @@
+- hosts: ansible
+  gather_facts: false
+  tasks:
+  - name: deploy dockercoins application on k8s 
+    shell: |
+      kubectl apply -f dockercoins-k8s.yml
+      sleep 30
+      kubectl get all -n dockercoins
+    register: dockercoins_deploy
+    tags: 
+    - deploy_dockercoins
+  - name: remove dockercoins application from k8s
+    shell: |
+      kubectl delete -f dockercoins-k8s.yml
+      sleep 30
+      kubectl get all -n dockercoins
+    register: dockercoins_deploy
+    tags: 
+    - remove_dockercoins
+      
+  - name: Verify dockercoins deployment
+    debug:
+      msg: "{{ dockercoins_deploy.stdout_lines | list }}"
+    tags:
+    - deploy_dockercoins
+    - remove_dockercoins
+
+
+    
